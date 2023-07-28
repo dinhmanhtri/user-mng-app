@@ -12,16 +12,6 @@ app.use(cors());
 // api routes
 app.use("/users", require("./users/users.controller"));
 
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
-
-
 // global error handler
 app.use(errorHandler);
 

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {Formik} from 'formik';
 import axios from 'axios';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 interface FormValues {
   title: string;
@@ -19,6 +20,20 @@ interface FormValues {
   password: string;
   confirmPassword: string;
 }
+
+const showToast = (status: boolean) => {
+  if (status) {
+    Toast.show({
+      type: 'success',
+      text1: 'Signup successfully',
+    });
+  } else {
+    Toast.show({
+      type: 'error',
+      text1: 'Signup failed',
+    });
+  }
+};
 
 const AuthForm = () => {
   const initialValues: FormValues = {
@@ -31,16 +46,14 @@ const AuthForm = () => {
     confirmPassword: '',
   };
 
-  const handleSignup = async values => {
+  const handleSignup = async (values: FormValues) => {
     try {
       console.log(values);
-      const response = await axios.post(
-        'http://192.168.1.46:4000/users',
-        values,
-      );
-      console.log(response);
-    } catch (error) {
-      console.log('Error:', error);
+      await axios.post('http://192.168.1.46:4000/users', values);
+      showToast(true);
+    } catch (err) {
+      showToast(false);
+      console.log(err);
     }
   };
 
@@ -48,8 +61,9 @@ const AuthForm = () => {
     <ScrollView style={styles.container}>
       <Formik
         initialValues={initialValues}
-        onSubmit={values => {
+        onSubmit={(values, {resetForm}) => {
           handleSignup(values);
+          resetForm();
         }}>
         {({handleChange, handleBlur, handleSubmit, values}) => (
           <View style={{flex: 1}}>
@@ -101,6 +115,7 @@ const AuthForm = () => {
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
+                secureTextEntry={true}
                 placeholder="Password"
                 onChangeText={handleChange('password')}
                 onBlur={handleBlur('password')}
@@ -109,13 +124,18 @@ const AuthForm = () => {
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
+                secureTextEntry={true}
                 placeholder="Confirm password"
                 onChangeText={handleChange('confirmPassword')}
                 onBlur={handleBlur('confirmPassword')}
                 value={values.confirmPassword}
               />
 
-              <TouchableOpacity style={styles.btnSubmit} onPress={handleSubmit}>
+              <TouchableOpacity
+                style={styles.btnSubmit}
+                onPress={() => {
+                  handleSubmit();
+                }}>
                 <Text style={styles.btnLabel}>Signup</Text>
               </TouchableOpacity>
             </View>

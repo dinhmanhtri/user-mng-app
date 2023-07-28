@@ -5,6 +5,7 @@ import {View, Text, Button} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AuthForm from './src/screens/Auth/AuthForm';
+import Toast from 'react-native-toast-message';
 
 function Started({navigation}: {navigation: any}) {
   return (
@@ -20,25 +21,28 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Started">
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="Started"
-          component={Started}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="Signup"
-          component={AuthForm}
-        />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="Login"
-          component={AuthForm}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Started">
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Started"
+            component={Started}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Signup"
+            component={AuthForm}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Login"
+            component={AuthForm}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Toast />
+    </>
   );
 }
 
