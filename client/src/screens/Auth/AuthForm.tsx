@@ -10,6 +10,7 @@ import {
 import {Formik} from 'formik';
 import axios from 'axios';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import * as Yup from 'yup';
 
 interface FormValues {
   title: string;
@@ -35,7 +36,38 @@ const showToast = (status: boolean) => {
   }
 };
 
-const AuthForm = () => {
+const SignupSchema = Yup.object().shape({
+  title: Yup.string()
+    .min(2, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
+  firstName: Yup.string()
+    .min(2, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
+  lastName: Yup.string()
+    .min(2, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
+  role: Yup.string()
+    .min(2, 'Too Short!')
+    .max(50, 'Too Long!')
+    .required('Required'),
+  email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string()
+    .required('Required')
+    .min(8, 'Password is too short - should be 8 chars minimum.')
+    .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
+  confirmPassword: Yup.string().oneOf(
+    [Yup.ref('password')],
+    'Passwords must match',
+  ),
+});
+
+const AuthForm = ({route, navigation}) => {
+  console.log(route.name);
+  console.log(navigation);
+
   const initialValues: FormValues = {
     title: '',
     firstName: '',
@@ -64,11 +96,19 @@ const AuthForm = () => {
         onSubmit={(values, {resetForm}) => {
           handleSignup(values);
           resetForm();
-        }}>
-        {({handleChange, handleBlur, handleSubmit, values}) => (
+        }}
+        validationSchema={SignupSchema}>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
           <View style={{flex: 1}}>
             <View style={styles.header}>
-              <Text style={styles.headerTop}>Get Started</Text>
+              <Text style={styles.headerTop}>{route.name}</Text>
               <Text>by creating a free account</Text>
             </View>
             <View style={styles.content}>
@@ -80,6 +120,9 @@ const AuthForm = () => {
                 onBlur={handleBlur('title')}
                 value={values.title}
               />
+              {errors.title && touched.title ? (
+                <Text style={styles.error}>{errors.title}</Text>
+              ) : null}
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
@@ -88,6 +131,9 @@ const AuthForm = () => {
                 onBlur={handleBlur('firstName')}
                 value={values.firstName}
               />
+              {errors.firstName && touched.firstName ? (
+                <Text style={styles.error}>{errors.firstName}</Text>
+              ) : null}
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
@@ -96,6 +142,9 @@ const AuthForm = () => {
                 onBlur={handleBlur('lastName')}
                 value={values.lastName}
               />
+              {errors.lastName && touched.lastName ? (
+                <Text style={styles.error}>{errors.lastName}</Text>
+              ) : null}
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
@@ -104,6 +153,9 @@ const AuthForm = () => {
                 onBlur={handleBlur('role')}
                 value={values.role}
               />
+              {errors.role && touched.role ? (
+                <Text style={styles.error}>{errors.role}</Text>
+              ) : null}
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
@@ -112,6 +164,9 @@ const AuthForm = () => {
                 onBlur={handleBlur('email')}
                 value={values.email}
               />
+              {errors.email && touched.email ? (
+                <Text style={styles.error}>{errors.email}</Text>
+              ) : null}
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
@@ -121,6 +176,9 @@ const AuthForm = () => {
                 onBlur={handleBlur('password')}
                 value={values.password}
               />
+              {errors.password && touched.password ? (
+                <Text style={styles.error}>{errors.password}</Text>
+              ) : null}
               <TextInput
                 placeholderTextColor="rgba(0, 0, 0, 0.50)"
                 style={styles.input}
@@ -130,13 +188,15 @@ const AuthForm = () => {
                 onBlur={handleBlur('confirmPassword')}
                 value={values.confirmPassword}
               />
-
+              {errors.confirmPassword && touched.confirmPassword ? (
+                <Text style={styles.error}>{errors.confirmPassword}</Text>
+              ) : null}
               <TouchableOpacity
                 style={styles.btnSubmit}
                 onPress={() => {
                   handleSubmit();
                 }}>
-                <Text style={styles.btnLabel}>Signup</Text>
+                <Text style={styles.btnLabel}>Sign Up</Text>
               </TouchableOpacity>
             </View>
             <View style={styles.footer}>
@@ -211,6 +271,11 @@ const styles = StyleSheet.create({
   loginLink: {
     color: 'rgba(108, 99, 255, 1)',
     fontWeight: '700',
+  },
+
+  error: {
+    color: 'red',
+    marginBottom: 10,
   },
 });
 
